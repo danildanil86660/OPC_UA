@@ -1,7 +1,5 @@
 .idea
-testing_function.ipynb
-test_threading_tui.py
+
 __pycache__
-colonize.py
-Будет удалено colonize.py
+test_function.py
 test.py

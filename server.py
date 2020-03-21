@@ -58,7 +58,4 @@ while True:
                 # TODO как вызывать функции из списка
                 pass
 
-        def run(self):
-            self.server.start()
-            print(f"Server start at {url}")
 
