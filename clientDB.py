@@ -24,9 +24,9 @@ class ClientDB:
     def create_table(self):
         tmp = list()
         for field in self.list_fields:
-            tmp.clear()
-            tmp.append(":".join(i for i in [field, self.list_fields[field]]))
+            tmp.append(" ".join(i for i in ["'" + field + "'", self.list_fields[field]]))
 
-        field_table = ','.join(i for i in tmp)
-        sql = f'CREATE TABLE test_table()'
+        field_table = ', '.join(i for i in tmp)
+        sql = f'CREATE TABLE test_table({field_table})'
+        self.clien.execute(sql)
         pass
