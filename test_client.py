@@ -1,4 +1,6 @@
 from opcua import Client
+from Initialization_Parametrs import Parametrs
+from server import OPCServer
 
 
 class OPCClient:
@@ -9,12 +11,19 @@ class OPCClient:
 
     def get_value(self, count):
         num = 2
-        list_value = list()
         while num < count + 2:
-            list_value.append(self.client.get_node(f'ns=2; i={num}').get_value())
+            print(self.client.get_node(f'ns=2; i={num}').get_value())
             num += 1
-        return list_value
 
     def run(self):
         self.client.connect()
         print(f'Client connected to {self.url}')
+
+
+opcs = OPCServer()
+opcs.run()
+
+opcc = OPCClient()
+opcc.run()
+while True:
+    opcc.get_value(len(opcs.generate_data(opcs, Parametrs)))
