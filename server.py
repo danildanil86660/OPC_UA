@@ -1,5 +1,5 @@
 from opcua import Server
-from random import randint
+import random
 
 
 class OPCServer:
@@ -19,18 +19,20 @@ class OPCServer:
             variable.append(self.Object_node.add_variable(self.addspace, f'{parameters.name}', 0))
         return variable
 
-    def set_value(self, variables: list, list_parameters: list):
+    @staticmethod
+    def set_value(variables: list, list_parameters: list):
         i = 0
         for var in variables:
-            var.set_writable()
-            var.set_value(randint(list_parameters[i].restriction[0], list_parameters[i].restriction[1]))
+            var.set_value(random.uniform(list_parameters[i].restriction[0], list_parameters[i].restriction[1]))
             i += 1
+
+    @staticmethod
+    def generate_data(opc, parameters: list):
+        while True:
+            list_variables = opc.set_variable(parameters)
+            opc.set_value(list_variables, parameters)
+            return list_variables
 
     def run(self):
         self.server.start()
         print(f"Server start at {self.url}")
-
-    def generate_data(self, opc, parameters: list):
-        while True:
-            list_variables = opc.set_variable(parameters)
-            opc.set_value(list_variables, parameters)
