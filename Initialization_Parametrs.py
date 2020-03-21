@@ -2,7 +2,6 @@ class InitParameters:
 
     def __init__(self, name, lower_bound, upper_bound):
         self.name = name
-        self.name = name
         self.restriction = [lower_bound, upper_bound]
         self.value = None
 
