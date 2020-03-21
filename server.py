@@ -2,6 +2,10 @@ import time
 from opcua import Server
 from random import randint
 import datetime
+from Initialization_Parametrs import Parametrs
+
+for param in Parametrs:
+    print(param.to_JSON())
 
 server = Server()
 
@@ -24,6 +28,7 @@ Temp.set_writable()
 Press.set_writable()
 Time.set_writable()
 Flow.set_writable()
+print(Temp)
 server.start()
 print(f"Server start at {url}")
 while True:
@@ -49,19 +54,16 @@ while True:
             self.node = self.server.get_objects_node()
             self.Param = node.add_object(addspace, "Parameters")
 
+
         def set_parameters(self, list_parameters: list):
+
             function_Parameters = list()
             for parameters in list_parameters:
-                function_Parameters.clear()
-                function_Parameters.append(Param.add_variable(addspace, f'{parameters}', 0))
-            for function in function_Parameters:
-                # TODO как вызывать функции из списка
-                pass
-
-        def physical_restriction(self, parametrs_specification: list, parametrs_value):
-
-            for parametrs in list_parametrs:
-                pass
+                function_Parameters.append(Param.add_variable(self.Param, f'{parameters.name}', 0))
+            i = 0
+            for unit in function_Parameters:
+                unit.set_value(randint(list_parameters[i].restriction[0], list_parameters[i].restriction[1]))
+                i += 1
 
         def run(self):
             self.server.start()
