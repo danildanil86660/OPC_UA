@@ -19,11 +19,14 @@ class OPCServer:
             variable.append(self.Object_node.add_variable(self.addspace, f'{parameters.name}', 0))
         return variable
 
+    def stop(self):
+        self.server.stop()
+
     @staticmethod
     def set_value(variables: list, list_parameters: list):
         i = 0
         for var in variables:
-            var.set_value(random.uniform(list_parameters[i].restriction[0], list_parameters[i].restriction[1]))
+            var.set_value(round(random.uniform(list_parameters[i].restriction[0], list_parameters[i].restriction[1]), 2))
             i += 1
 
     @staticmethod
