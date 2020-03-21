@@ -2,6 +2,10 @@ import time
 from opcua import Server
 from random import randint
 import datetime
+from Initialization_Parametrs import Parametrs
+
+for param in Parametrs:
+    print(param.to_JSON())
 
 server = Server()
 
@@ -15,28 +19,29 @@ node = server.get_objects_node()
 
 Param = node.add_object(addspace, "Parameters")
 a = Param.add_variable(addspace, 'Temperature', 0)
-Temp = a(addspace, 'Temperature', 0)
-Press = a(addspace, 'Pressure', 0)
-Flow = a(addspace, 'Flow', 0)
-Time = a(addspace, 'Time', 0)
+Temp = Param.add_variable(addspace, 'Temperature', 0)
+Press = Param.add_variable(addspace, 'Pressure', 0)
+Flow = Param.add_variable(addspace, 'Flow', 0)
+Time = Param.add_variable(addspace, 'Time', 0)
 
 Temp.set_writable()
 Press.set_writable()
 Time.set_writable()
 Flow.set_writable()
+print(Temp)
 server.start()
 print(f"Server start at {url}")
 while True:
-    Temperature = randint(10, 50)
+    Temperature = randint(90, 150)
     Pressure = randint(100, 999)
     TIME = datetime.datetime.now()
-    FLOW = randint(50, 60)
+    FLOW = randint(0, 60)
 
     Temp.set_value(Temperature)
     Press.set_value(Pressure)
     Time.set_value(TIME)
     Flow.set_value(FLOW)
-    print(TIME)
+    print(Temp.get_value(), TIME)
     time.sleep(1)
 
     class OPCServer:
@@ -49,14 +54,16 @@ while True:
             self.node = self.server.get_objects_node()
             self.Param = node.add_object(addspace, "Parameters")
 
+
         def set_parameters(self, list_parameters: list):
+
             function_Parameters = list()
             for parameters in list_parameters:
-                function_Parameters.clear()
-                function_Parameters.append(Param.add_variable(addspace, f'{parameters}', 0))
-            for function in function_Parameters:
-                # TODO как вызывать функции из списка
-                pass
+                function_Parameters.append(Param.add_variable(self.Param, f'{parameters.name}', 0))
+            i = 0
+            for unit in function_Parameters:
+                unit.set_value(randint(list_parameters[i].restriction[0], list_parameters[i].restriction[1]))
+                i += 1
 
         def run(self):
             self.server.start()
