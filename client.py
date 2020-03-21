@@ -1,24 +1,19 @@
 from opcua import Client
-import time
 
-url = "opc.tcp://127.0.0.1:48402/freeopcua/server/"
 
-client = Client(url)
-client.connect()
-print('Client connected')
+class OPCClient:
 
-while True:
-    Temp = client.get_node('ns=2; i=2')
-    Temperature = Temp.get_value()
+    def __init__(self, url="opc.tcp://127.0.0.1:48402/freeopcua/server/"):
+        self.url = url
+        self.client = Client(self.url)
 
-    Press = client.get_node('ns=2; i=3')
-    Pressure = Press.get_value()
+    def get_value(self, count):
+        num = 2
+        list_value = list()
+        while num < count + 2:
+            list_value.append(self.client.get_node(f'ns=2; i={num}').get_value())
+            num += 1
 
-    Time = client.get_node('ns=2; i=4')
-    Time_value = Time.get_value()
-
-    Flow = client.get_node('ns=2; i=5')
-    Flow_value = Flow.get_value()
-    print(Time_value, Pressure, Temperature, Flow_value)
-
-    time.sleep(1)
+    def run(self):
+        self.client.connect()
+        print(f'Client connected to {self.url}')
