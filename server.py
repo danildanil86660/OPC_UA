@@ -1,71 +1,36 @@
-import time
 from opcua import Server
 from random import randint
-import datetime
-from Initialization_Parametrs import Parametrs
-
-for param in Parametrs:
-    print(param.to_JSON())
-
-server = Server()
-
-url = "opc.tcp://127.0.0.1:48402/freeopcua/server/"
-server.set_endpoint(url)
-#server.set_application_uri(url)
-name = "OPCUA_SIMULATION_SERVER"
-addspace = server.register_namespace(name)
-
-node = server.get_objects_node()
-
-Param = node.add_object(addspace, "Parameters")
-a = Param.add_variable(addspace, 'Temperature', 0)
-Temp = Param.add_variable(addspace, 'Temperature', 0)
-Press = Param.add_variable(addspace, 'Pressure', 0)
-Flow = Param.add_variable(addspace, 'Flow', 0)
-Time = Param.add_variable(addspace, 'Time', 0)
-
-Temp.set_writable()
-Press.set_writable()
-Time.set_writable()
-Flow.set_writable()
-print(Temp)
-server.start()
-print(f"Server start at {url}")
-while True:
-    Temperature = randint(90, 150)
-    Pressure = randint(100, 999)
-    TIME = datetime.datetime.now()
-    FLOW = randint(0, 60)
-
-    Temp.set_value(Temperature)
-    Press.set_value(Pressure)
-    Time.set_value(TIME)
-    Flow.set_value(FLOW)
-    print(Temp.get_value(), TIME)
-    time.sleep(1)
-
-    class OPCServer:
-
-        def __init__(self, url="opc.tcp://127.0.0.1:48402/freeopcua/server/",
-                     name="OPCUA_SIMULATION_SERVER"):
-            self.server = Server()
-            self.server.set_endpoint(url)
-            self.addspace = self.server.register_namespace(name)
-            self.node = self.server.get_objects_node()
-            self.Param = node.add_object(addspace, "Parameters")
 
 
-        def set_parameters(self, list_parameters: list):
+class OPCServer:
 
-            function_Parameters = list()
-            for parameters in list_parameters:
-                function_Parameters.append(Param.add_variable(self.Param, f'{parameters.name}', 0))
-            i = 0
-            for unit in function_Parameters:
-                unit.set_value(randint(list_parameters[i].restriction[0], list_parameters[i].restriction[1]))
-                i += 1
+    def __init__(self, url="opc.tcp://127.0.0.1:48402/freeopcua/server/",
+                 name="OPCUA_SIMULATION_SERVER"):
+        self.url = url
+        self.server = Server()
+        self.server.set_endpoint(self.url)
+        self.addspace = self.server.register_namespace(name)
+        self.node = self.server.get_objects_node()
+        self.Object_node = self.node.add_object(self.addspace, "Parameters")
 
-        def run(self):
-            self.server.start()
-            print(f"Server start at {url}")
+    def set_variable(self, list_parameters: list):
+        variable = list()
+        for parameters in list_parameters:
+            variable.append(self.Object_node.add_variable(self.addspace, f'{parameters.name}', 0))
+        return variable
 
+    def set_value(self, variables: list, list_parameters: list):
+        i = 0
+        for var in variables:
+            var.set_writable()
+            var.set_value(randint(list_parameters[i].restriction[0], list_parameters[i].restriction[1]))
+            i += 1
+
+    def run(self):
+        self.server.start()
+        print(f"Server start at {self.url}")
+
+    def generate_data(self, opc, parameters: list):
+        while True:
+            list_variables = opc.set_variable(parameters)
+            opc.set_value(list_variables, parameters)
