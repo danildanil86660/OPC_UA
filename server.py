@@ -1,7 +1,7 @@
 from opcua import Server
-import random
+from random import uniform, seed
 
-
+seed(42)
 class OPCServer:
 
     def __init__(self, url="opc.tcp://127.0.0.1:48402/freeopcua/server/",
@@ -12,6 +12,8 @@ class OPCServer:
         self.addspace = self.server.register_namespace(name)
         self.node = self.server.get_objects_node()
         self.Object_node = self.node.add_object(self.addspace, "Parameters")
+        self.temp = 0
+        self.list_variables = list()
 
     def set_variable(self, list_parameters: list):
         variable = list()
@@ -20,18 +22,22 @@ class OPCServer:
         return variable
 
     @staticmethod
-    def set_value(variables: list, list_parameters: list):
+    def set_values(variables: list, list_parameters: list):
         i = 0
         for var in variables:
-            var.set_value(random.uniform(list_parameters[i].restriction[0], list_parameters[i].restriction[1]))
+            var.set_writable()
+            r = uniform(list_parameters[i].restriction[0], list_parameters[i].restriction[1])
+            var.set_value(r)
             i += 1
 
-    @staticmethod
-    def generate_data(opc, parameters: list):
+    #@staticmethod
+    def generate_data(self, opc, parameters: list):
+        if self.temp == 0:
+            self.list_variables = opc.set_variable(parameters)
+            self.temp += 1
         while True:
-            list_variables = opc.set_variable(parameters)
-            opc.set_value(list_variables, parameters)
-            return list_variables
+            opc.set_values(self.list_variables, parameters)
+            return self.list_variables
 
     def run(self):
         self.server.start()
