@@ -7,7 +7,8 @@ class OPCClient:
         self.url = url
         self.client = Client(self.url)
 
-    def get_value(self, count):
+    def get_value(self, parameters):
+        count = len(parameters)
         num = 2
         list_value = list()
         while num < count + 2:
@@ -19,3 +20,6 @@ class OPCClient:
     def run(self):
         self.client.connect()
         print(f'Client connected to {self.url}')
+
+    def stop(self):
+        self.client.disconnect()
