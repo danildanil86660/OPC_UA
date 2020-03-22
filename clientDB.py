@@ -18,22 +18,27 @@ class ClientDB:
     def create_bd(self, name_bd: str):
         self.client.execute(f'CREATE DATABASE IF NOT EXISTS {name_bd}')
 
-    def create_table(self):
+    def create_table(self, name_tb: str):
         tmp = list()
         for field in self.list_fields:
-            tmp.append(" ".join(i for i in ["'" + field + "'", self.list_fields[field]]))
+            tmp.append(" ".join(i for i in [field, self.list_fields[field]]))
 
+        tmp.append('data Date')
         field_table = ', '.join(i for i in tmp)
-        sql = f'CREATE TABLE test_table({field_table})'
+        sql = f"create table if not exists testBD.{name_tb} ({field_table}) " \
+              f"ENGINE = MergeTree() " \
+              f"PARTITION BY toYYYYMM(data) " \
+              f"ORDER BY data;"
         self.client.execute(sql)
+        return sql
 
     def test(self):
-        return self.client.execute('SELECT 1')
+        return self.client.execute('SHOW DATABASES')
 
 
 def main():
     b = ClientDB()
-    print(b.test())
+    print(b.create_table("variable"))
 
 
 if __name__ == '__main__':
