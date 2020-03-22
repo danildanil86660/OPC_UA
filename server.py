@@ -1,3 +1,5 @@
+import random
+
 from opcua import Server
 from random import uniform, seed
 
@@ -28,16 +30,14 @@ class OPCServer:
     def set_values(variables: list, list_parameters: list):
         i = 0
         for var in variables:
-<<<<<<< HEAD
+
             var.set_value(round(random.uniform(list_parameters[i].restriction[0], list_parameters[i].restriction[1]), 2))
-=======
+
             var.set_writable()
             r = uniform(list_parameters[i].restriction[0], list_parameters[i].restriction[1])
             var.set_value(r)
->>>>>>> 076cbf11b65772f01fb3eba69f22ec9fcc6e3004
             i += 1
 
-    #@staticmethod
     def generate_data(self, opc, parameters: list):
         if self.temp == 0:
             self.list_variables = opc.set_variable(parameters)

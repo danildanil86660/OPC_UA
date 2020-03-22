@@ -1,4 +1,7 @@
 from clickhouse_driver.client import Client
+from client import OPCClient
+from datetime import datetime
+import random
 
 
 class ClientDB:
@@ -22,7 +25,6 @@ class ClientDB:
         tmp = list()
         for field in self.list_fields:
             tmp.append(" ".join(i for i in [field, self.list_fields[field]]))
-
         tmp.append('data Date')
         field_table = ', '.join(i for i in tmp)
         sql = f"create table if not exists {name_tb} ({field_table}) " \
@@ -32,13 +34,26 @@ class ClientDB:
         self.client.execute(sql)
         return sql
 
+    def insert_data(self, name_tb: str, list_value: list):
+        #colums = 'data, '
+        colums = ', '.join(i for i in self.list_fields)
+        valu = ', '.join(str(i) for i in list_value)
+        sql = f"insert INTO {name_tb} ({colums}) FORMAT Values ({valu})"
+        #self.client.execute(sql)
+        return sql
+
+    def disconnect(self):
+        print("Disconnect ClickHous")
+        self.client.disconnect()
+
     def test(self):
         return self.client.execute('SHOW DATABASES')
 
 
 def main():
     b = ClientDB()
-    print(b.create_table("variable"))
+    print(b.create_table('var'))
+    #print(b.insert_data("test", []))
 
 
 if __name__ == '__main__':
