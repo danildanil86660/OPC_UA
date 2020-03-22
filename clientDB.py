@@ -25,7 +25,7 @@ class ClientDB:
 
         tmp.append('data Date')
         field_table = ', '.join(i for i in tmp)
-        sql = f"create table if not exists testBD.{name_tb} ({field_table}) " \
+        sql = f"create table if not exists {name_tb} ({field_table}) " \
               f"ENGINE = MergeTree() " \
               f"PARTITION BY toYYYYMM(data) " \
               f"ORDER BY data;"
